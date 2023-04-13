@@ -414,6 +414,7 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
     typingDisabled: false,
     text: undefined,
     messages: undefined,
+    contextValues: {},
   }
 
   constructor(props: GiftedChatProps<TMessage>) {
@@ -435,6 +436,10 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
     this.initLocale()
     this.setMessages(messages || [])
     this.setTextFromProp(text)
+    this.setState({contextValues: {
+      actionSheet: this.props.actionSheet || (() => this._actionSheetRef.current?.getContext()!),
+      getLocale: this.getLocale,
+    }})
   }
 
   componentWillUnmount() {
@@ -869,16 +874,9 @@ class GiftedChat<TMessage extends IMessage = IMessage> extends React.Component<
 
   render() {
     if (this.state.isInitialized === true) {
-      const actionSheet =
-        this.props.actionSheet ||
-        (() => this._actionSheetRef.current?.getContext()!)
-      const { getLocale } = this
       return (
         <GiftedChatContext.Provider
-          value={{
-            actionSheet,
-            getLocale,
-          }}
+          value={this.state.contextValues}
         >
           <View testID={TEST_ID.WRAPPER} style={styles.wrapper}>
             <ActionSheetProvider ref={this._actionSheetRef}>
